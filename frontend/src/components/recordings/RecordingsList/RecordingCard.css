@@ -1,0 +1,321 @@
+/* Recording Card Component - Optimized for Sidebar Layout */
+.recording-card {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Ensure card fits in sidebar */
+  flex-shrink: 1;
+}
+
+.recording-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+  border-color: #4F4A85;
+}
+
+/* ACTIVE STATE STYLING - Shows when card is currently playing */
+.recording-card.active {
+  border: 2px solid #4F4A85;
+  background: linear-gradient(135deg, #f8f7ff 0%, #ffffff 100%);
+  box-shadow: 0 4px 16px rgba(79, 74, 133, 0.2);
+  transform: scale(1.02);
+}
+
+.recording-card.active:hover {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79, 74, 133, 0.3);
+}
+
+.recording-card.active .recording-card-header {
+  background: linear-gradient(135deg, #4F4A85 0%, #6B5B95 100%);
+  color: white;
+}
+
+.recording-card.active .recording-card-title {
+  color: white;
+}
+
+.recording-card.active .recording-card-id {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.recording-card.active .recording-card-play-button.playing {
+  background-color: #28a745;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Card Header - Compact for sidebar */
+.recording-card-header {
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fafafa;
+  min-height: 50px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.recording-card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  flex: 1;
+  word-break: break-word;
+  max-height: 2.6em;
+  min-width: 0;
+  transition: color 0.3s ease;
+}
+
+.recording-card-id {
+  background-color: #4F4A85;
+  color: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+/* Card Body - Compact */
+.recording-card-body {
+  padding: 0.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 45px;
+  box-sizing: border-box;
+}
+
+.recording-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recording-card-filename {
+  font-size: 0.7rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+  background-color: #f8f9fa;
+  padding: 0.25rem 0.3rem;
+  border-radius: 3px;
+  border: 1px solid #e9ecef;
+  box-sizing: border-box;
+}
+
+.recording-card-date {
+  font-size: 0.7rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background-color: #f0f7ff;
+  padding: 0.25rem 0.3rem;
+  border-radius: 3px;
+  border: 1px solid #d1e7fd;
+  box-sizing: border-box;
+}
+
+/* Card Footer - Compact */
+.recording-card-footer {
+  padding: 0.75rem;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
+  min-height: 45px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.recording-card-play-button {
+  padding: 0.5rem 1rem;
+  background-color: #4F4A85;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 120px;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.recording-card-play-button:hover {
+  background-color: #423d73;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(79, 74, 133, 0.3);
+}
+
+.recording-card-play-button:active {
+  transform: translateY(0);
+}
+
+.recording-card-play-button:focus {
+  outline: 2px solid #4F4A85;
+  outline-offset: 2px;
+}
+
+.recording-card-play-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Responsive adjustments for cards in sidebar */
+@media (max-width: 768px) {
+  .recording-card {
+    border-width: 1px;
+  }
+  
+  .recording-card:hover {
+    border-width: 1px;
+    transform: translateY(-0.5px);
+  }
+  
+  .recording-card-header {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+  
+  .recording-card-title {
+    font-size: 0.9rem;
+  }
+  
+  .recording-card-id {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+  }
+  
+  .recording-card-body {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+  
+  .recording-card-footer {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+  
+  .recording-card-play-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    max-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .recording-card-header {
+    padding: 0.4rem;
+  }
+  
+  .recording-card-title {
+    font-size: 0.85rem;
+  }
+  
+  .recording-card-body {
+    padding: 0.4rem;
+  }
+  
+  .recording-card-footer {
+    padding: 0.4rem;
+  }
+  
+  .recording-card-filename {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.3rem;
+  }
+  
+  .recording-card-date {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.3rem;
+  }
+  
+  .recording-card-play-button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.7rem;
+    max-width: 90px;
+  }
+}
+
+/* Animation for card entrance */
+.recording-card {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ensure proper sizing and prevent overflow in sidebar */
+.recording-card * {
+  box-sizing: border-box;
+}
+
+/* Fix for any potential border-box issues in sidebar layout */
+.recording-card,
+.recording-card *,
+.recording-card *::before,
+.recording-card *::after {
+  box-sizing: border-box;
+}
+
+/* Critical: Ensure card never exceeds available width */
+.recording-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+} 
