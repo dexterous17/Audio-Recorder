@@ -3,6 +3,7 @@
 
 // LAYOUT COMPONENTS (Independent)
 export { default as Menu } from './layout/Menu'
+export { default as AudioPlayerHeader } from './layout/AudioPlayerHeader'
 
 // RECORDING COMPONENTS (Direct children of App)
 export { default as AudioRecorder } from './recording/AudioRecorder'
@@ -18,6 +19,7 @@ export { default as RecordingCard } from './recordings/RecordingsList/RecordingC
 
 // Re-export all components for backward compatibility
 export * from './layout/Menu'
+export * from './layout/AudioPlayerHeader'
 export * from './recording/AudioRecorder'
 export * from './playback/RecordingPlayback/RecordingPlayback'
 export * from './playback/RecordingPlayback/TitleModal'

@@ -1,14 +1,15 @@
 import { useRef, useEffect, useState } from 'react'
+import { AudioPlayerHeader } from '../../components'
 import WaveSurfer from 'wavesurfer.js'
 
 interface AudioPlayerProps {
   url: string
   title?: string
   recordedDate?: string
-  onStop?: () => void
+  recordingId?: number
 }
 
-function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: AudioPlayerProps) {
+function AudioPlayer({ url, title = 'Playing Audio', recordedDate, recordingId }: AudioPlayerProps) {
   console.log('🚀 AudioPlayer: Component initializing', { url, title, recordedDate })
   
   const wavesurferRef = useRef<WaveSurfer | null>(null)
@@ -135,14 +136,14 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
         barGap: 1,                 // Small gap between bars
         barRadius: 3,              // Rounded bar edges
         normalize: true,           // Normalize waveform
-        responsive: true,          // Responsive to container
+        // responsive: true,          // Responsive to container (not available in this version)
         hideScrollbar: true,       // Clean appearance
-        interaction: true,         // Allow clicking to seek
+        interact: true,         // Allow clicking to seek
         dragToSeek: true,         // Drag to seek functionality
         // Add safety configurations
         fillParent: true,          // Ensure proper container filling
         minPxPerSec: 50,          // Minimum pixels per second (prevents too dense waveforms)
-        pixelRatio: Math.min(window.devicePixelRatio || 1, 2), // Limit pixel ratio to prevent memory issues
+        // pixelRatio: Math.min(window.devicePixelRatio || 1, 2), // Limit pixel ratio to prevent memory issues (not available in this version)
       })
 
       console.log('✅ AudioPlayer: WaveSurfer instance created with safety config')
@@ -162,10 +163,6 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
       wavesurferRef.current.on('finish', () => {
         console.log('🏁 AudioPlayer: Playback finished')
         setIsPlaying(false)
-        if (onStop) {
-          console.log('📤 AudioPlayer: Calling onStop callback')
-          onStop()
-        }
       })
       
       wavesurferRef.current.on('ready', () => {
@@ -225,7 +222,7 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
         console.log('✅ AudioPlayer: Audio load initiated successfully')
       } catch (loadError) {
         console.error('❌ AudioPlayer: Audio load failed:', loadError)
-        throw new Error(`Failed to load audio: ${loadError.message}`)
+        throw new Error(`Failed to load audio: ${loadError instanceof Error ? loadError.message : 'Unknown error'}`)
       }
       
     } catch (err) {
@@ -276,10 +273,6 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
         setIsPlaying(false)
         setCurrentTime(0)
         console.log('✅ AudioPlayer: Playback stopped and time reset')
-        if (onStop) {
-          console.log('📤 AudioPlayer: Calling onStop callback')
-          onStop()
-        }
       } else {
         console.warn('⚠️ AudioPlayer: Cannot stop - no wavesurfer instance')
       }
@@ -329,12 +322,15 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
     
     return (
       <div className="audio-player-container">
-        <div className="audio-player-header">
-          <h3>{title}</h3>
-          {recordedDate && (
-            <span className="recorded-date">{recordedDate}</span>
-          )}
-        </div>
+        <AudioPlayerHeader 
+          title={title}
+          recordedDate={recordedDate}
+          recordingId={recordingId}
+          deleteDisabled={false}
+          onDelete={() => {
+            console.log('🗑️ AudioPlayer: Delete clicked (stopped state)')
+          }}
+        />
         
         <div className="audio-player-waveform">
           <div className="waveform-display">
@@ -385,12 +381,15 @@ function AudioPlayer({ url, title = 'Playing Audio', recordedDate, onStop }: Aud
         </div>
       )}
       
-      <div className="audio-player-header">
-        <h3>{title}</h3>
-        {recordedDate && (
-          <span className="recorded-date">{recordedDate}</span>
-        )}
-      </div>
+      <AudioPlayerHeader
+        title={title}
+        recordedDate={recordedDate}
+        recordingId={recordingId}
+        deleteDisabled={isPlaying}
+        onDelete={() => {
+          console.log('🗑️ AudioPlayer: Delete clicked')
+        }}
+      />
       
       <div className="audio-player-waveform">
         <div ref={containerRef} className="waveform-display" />

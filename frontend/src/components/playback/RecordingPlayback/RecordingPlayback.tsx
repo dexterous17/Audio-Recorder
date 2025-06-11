@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import WaveSurfer from 'wavesurfer.js'
+import api from '../../../api'
 import TitleModal from './TitleModal'
 
 interface SavedRecording {
@@ -274,7 +275,7 @@ function RecordingPlayback({ audioBlob, title = "Recorded Audio", onRetryRecordi
         return
       }
 
-      console.log('🔄 RecordingPlayback: Starting save process...')
+      console.log('🔄 RecordingPlayback: Starting save process using API management...')
       setError(null)
       
       // Enhanced blob validation
@@ -300,10 +301,6 @@ function RecordingPlayback({ audioBlob, title = "Recorded Audio", onRetryRecordi
       }
       
       console.log('✅ RecordingPlayback: Blob validation passed')
-      console.log('📦 RecordingPlayback: Preparing form data for upload...')
-      
-      // Create form data for upload
-      const formData = new FormData()
       
       // Generate filename with timestamp
       const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
@@ -330,97 +327,35 @@ function RecordingPlayback({ audioBlob, title = "Recorded Audio", onRetryRecordi
         return
       }
       
-      console.log('📦 RecordingPlayback: Appending data to FormData...')
-      formData.append('audio', file)
-      formData.append('title', recordingTitle || 'Untitled Recording')
-      formData.append('customFilename', filename)
+      console.log('📤 RecordingPlayback: Uploading via API management...')
       
-      // Log form data contents and verify file is attached
-      const formFile = formData.get('audio') as File
-      console.log('📋 RecordingPlayback: Form data prepared:', {
-        hasAudio: formData.has('audio'),
-        hasTitle: formData.has('title'),
-        hasCustomFilename: formData.has('customFilename'),
-        title: formData.get('title'),
-        customFilename: formData.get('customFilename'),
-        formFileSize: formFile ? formFile.size : 'no file',
-        formFileType: formFile ? formFile.type : 'no file'
-      })
+      // Upload using the new API management system
+      const savedRecording = await api.recordings.upload(
+        file,
+        recordingTitle || 'Untitled Recording',
+        filename
+      )
       
-      // Upload to backend
-      const uploadUrl = 'http://localhost:3000/api/upload'
-      console.log('📡 API: Preparing upload request to:', uploadUrl)
-      console.log('📡 API: Making POST request...')
+      console.log('✅ RecordingPlayback: Upload successful via API management')
       
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        body: formData
-      })
+      console.log('📤 RecordingPlayback: Calling onRecordingSaved callback:', savedRecording)
       
-      console.log('📡 API: Upload response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: {
-          contentType: response.headers.get('content-type'),
-          contentLength: response.headers.get('content-length')
-        }
-      })
-      
-      if (!response.ok) {
-        console.error('❌ API: Upload response not OK')
-        
-        let errorData
-        try {
-          errorData = await response.json()
-          console.error('❌ API: Error response data:', errorData)
-        } catch (parseError) {
-          console.error('❌ API: Failed to parse error response:', parseError)
-          errorData = { error: 'Unknown error' }
-        }
-        
-        const errorMessage = `Upload failed (${response.status}): ${errorData.error || response.statusText}`
-        console.error('❌ API: Upload failed:', errorMessage)
-        throw new Error(errorMessage)
-      }
-
-      console.log('📡 API: Parsing successful response...')
-      const result = await response.json()
-      console.log('📡 API: Upload response data:', {
-        hasFile: !!result.file,
-        message: result.message,
-        fileId: result.file?.id,
-        fileTitle: result.file?.title,
-        fileSource: result.file?.source
-      })
-
-      if (result.file) {
-        console.log('✅ RecordingPlayback: Upload successful, processing result...')
-        
-        const savedRecording: SavedRecording = {
-          id: result.file.id,
-          title: result.file.title,
-          source: result.file.source
-        }
-        
-        console.log('📤 RecordingPlayback: Calling onRecordingSaved callback:', savedRecording)
-        
-        if (onRecordingSaved) {
-          onRecordingSaved(savedRecording)
-          console.log('✅ RecordingPlayback: onRecordingSaved callback completed')
-        } else {
-          console.warn('⚠️ RecordingPlayback: No onRecordingSaved callback provided')
-        }
-        
-        console.log('🎉 RecordingPlayback: Recording saved successfully!')
+      if (onRecordingSaved) {
+        onRecordingSaved({
+          id: savedRecording.id,
+          title: savedRecording.title,
+          source: savedRecording.source
+        })
+        console.log('✅ RecordingPlayback: onRecordingSaved callback completed')
       } else {
-        console.error('❌ RecordingPlayback: No file data in response')
-        throw new Error('No file data received from server')
+        console.warn('⚠️ RecordingPlayback: No onRecordingSaved callback provided')
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      console.error('❌ RecordingPlayback: Save recording error:', {
-        error: err,
+      
+      console.log('🎉 RecordingPlayback: Recording saved successfully!')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.error('❌ RecordingPlayback: Save recording error via API management:', {
+        error,
         message: errorMessage,
         audioBlob: audioBlob ? { 
           size: audioBlob.size, 

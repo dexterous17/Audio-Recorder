@@ -1,16 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '../../../store/hooks'
+import { fetchRecordings, setSortField, setSortOrder, type SortField } from '../../../store/slices/recordingsListSlice'
+import type { Recording } from '../../../store/slices/recordingSlice'
+import api from '../../../api'
 import RecordingCard from './RecordingCard'
 import './RecordingsList.css'
-
-interface Recording {
-  id: number
-  title: string
-  source: string
-  created_at: string
-}
-
-type SortField = 'id' | 'title' | 'created_at'
-type SortOrder = 'asc' | 'desc'
 
 interface RecordingsListProps {
   onPlay: (url: string, recording: Recording) => void
@@ -57,12 +51,9 @@ interface RecordingsListProps {
 function RecordingsList({ onPlay, refreshTrigger = 0, activeRecordingId = null }: RecordingsListProps) {
   console.log('🚀 RecordingsList: Component initializing', { refreshTrigger, activeRecordingId })
 
-  // STATE: Component internal state management
-  const [recordings, setRecordings] = useState<Recording[]>([])  // Fetched recordings array
-  const [loading, setLoading] = useState(true)                   // API loading state
-  const [error, setError] = useState<string | null>(null)        // Error handling
-  const [sortField, setSortField] = useState<SortField>('created_at') // Current sort field
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc')  // Sort direction (newest first)
+  // Redux hooks
+  const dispatch = useAppDispatch()
+  const { recordings, loading, error, sortField, sortOrder } = useAppSelector(state => state.recordingsList)
 
   // Log state changes
   useEffect(() => {
@@ -76,83 +67,12 @@ function RecordingsList({ onPlay, refreshTrigger = 0, activeRecordingId = null }
     })
   }, [recordings, loading, error, sortField, sortOrder, refreshTrigger])
 
-  const fetchRecordings = async () => {
-    console.log('🔄 RecordingsList: fetchRecordings called')
-    console.log('📡 API: Starting recordings fetch request')
-    
-    try {
-      setLoading(true)
-      console.log('⏳ RecordingsList: Loading state set to true')
-      
-      setError(null)
-      console.log('✅ RecordingsList: Error state cleared')
 
-      const apiUrl = 'http://localhost:3000/api/recordings'
-      console.log('📡 API: Making GET request to:', apiUrl)
-      
-      const response = await fetch(apiUrl)
-      console.log('📡 API: Response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: {
-          contentType: response.headers.get('content-type'),
-          contentLength: response.headers.get('content-length')
-        }
-      })
-
-      if (!response.ok) {
-        console.error('❌ API: Response not OK:', {
-          status: response.status,
-          statusText: response.statusText
-        })
-        throw new Error(`Failed to fetch recordings: ${response.status} ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      console.log('📡 API: Response data parsed:', {
-        hasSuccess: !!data.success,
-        hasData: !!data.data,
-        hasItems: !!(data.data && data.data.items),
-        itemsCount: data.data?.items?.length || 0,
-        message: data.message
-      })
-
-      if (data.success && data.data && Array.isArray(data.data.items)) {
-        console.log('✅ RecordingsList: Valid recordings data received:', {
-          count: data.data.items.length,
-          items: data.data.items.map(item => ({
-            id: item.id,
-            title: item.title,
-            source: item.source,
-            created_at: item.created_at
-          }))
-        })
-        
-        setRecordings(data.data.items)
-        console.log('✅ RecordingsList: Recordings state updated')
-      } else {
-        console.warn('⚠️ RecordingsList: Invalid data structure received:', data)
-        setRecordings([])
-        console.log('⚠️ RecordingsList: Recordings set to empty array')
-      }
-    } catch (err) {
-      console.error('❌ RecordingsList: Error in fetchRecordings:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load recordings'
-      setError(errorMessage)
-      console.error('❌ RecordingsList: Error state set:', errorMessage)
-      setRecordings([])
-      console.log('❌ RecordingsList: Recordings cleared due to error')
-    } finally {
-      setLoading(false)
-      console.log('✅ RecordingsList: Loading state set to false')
-    }
-  }
 
   const handleRetryLoad = () => {
     console.log('🔄 RecordingsList: handleRetryLoad called')
     console.log('🔄 RecordingsList: User requested retry, refetching recordings...')
-    fetchRecordings()
+    dispatch(fetchRecordings())
   }
 
   const handleSort = (field: SortField) => {
@@ -161,11 +81,11 @@ function RecordingsList({ onPlay, refreshTrigger = 0, activeRecordingId = null }
     if (field === sortField) {
       const newOrder = sortOrder === 'asc' ? 'desc' : 'asc'
       console.log('🔄 RecordingsList: Toggling sort order', { from: sortOrder, to: newOrder })
-      setSortOrder(newOrder)
+      dispatch(setSortOrder(newOrder))
     } else {
       console.log('🔄 RecordingsList: Changing sort field', { from: sortField, to: field })
-      setSortField(field)
-      setSortOrder('asc')
+      dispatch(setSortField(field))
+      dispatch(setSortOrder('asc'))
       console.log('🔄 RecordingsList: Sort order reset to asc')
     }
   }
@@ -217,12 +137,12 @@ function RecordingsList({ onPlay, refreshTrigger = 0, activeRecordingId = null }
       // Parent App component will handle setting the active recording state
       console.log('🎯 RecordingsList: Notifying parent of recording selection:', recording.id)
     
-    const url = `http://localhost:3000/uploads/${recording.source}`
-    console.log('🔗 RecordingsList: Generated playback URL:', url)
-    
-    console.log('📤 RecordingsList: Calling onPlay callback with URL')
-    onPlay(url, recording)
-    console.log('✅ RecordingsList: onPlay callback completed')
+      const url = api.recordings.getPlaybackUrl(recording.source)
+      console.log('🔗 RecordingsList: Generated playback URL via API management:', url)
+      
+      console.log('📤 RecordingsList: Calling onPlay callback with URL')
+      onPlay(url, recording)
+      console.log('✅ RecordingsList: onPlay callback completed')
     } catch (err) {
       console.error('❌ RecordingsList: Error in handlePlayRecording:', err)
     }
@@ -231,8 +151,8 @@ function RecordingsList({ onPlay, refreshTrigger = 0, activeRecordingId = null }
   // Fetch recordings on component mount and when refreshTrigger changes
   useEffect(() => {
     console.log('🔄 RecordingsList: useEffect triggered for fetchRecordings', { refreshTrigger })
-    fetchRecordings()
-  }, [refreshTrigger])
+    dispatch(fetchRecordings())
+  }, [refreshTrigger, dispatch])
 
   // Log render decisions
   useEffect(() => {

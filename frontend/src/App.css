@@ -881,3 +881,19 @@ button.recording:hover {
     min-width: 45px;
   }
 }
+
+.delete-button {
+  background-color: #dc3545 !important; /* Red background */
+  border-color: #dc3545 !important;
+}
+
+.delete-button:hover:not(:disabled) {
+  background-color: #c82333 !important; /* Darker red on hover */
+  border-color: #bd2130 !important;
+}
+
+.delete-button:disabled {
+  background-color: #6c757d !important; /* Gray when disabled */
+  border-color: #6c757d !important;
+  opacity: 0.6;
+}

@@ -1,0 +1,392 @@
+/* Notification Toast Component Styles */
+.notification-toast {
+  position: fixed;
+  z-index: 10000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 2px solid;
+  padding: 0;
+  min-width: 280px;
+  max-width: 400px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: toastSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+.notification-toast:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.notification-toast--animating {
+  animation: toastSlideOut 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Content Container */
+.notification-toast__content {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+
+/* Icon */
+.notification-toast__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Message Text */
+.notification-toast__message {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-weight: 500;
+  word-wrap: break-word;
+}
+
+/* Dismiss Button */
+.notification-toast__dismiss {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.notification-toast__dismiss:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.notification-toast__dismiss:focus {
+  outline: 2px solid;
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* Progress Bar */
+.notification-toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgressBar linear;
+}
+
+@keyframes toastProgressBar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* NOTIFICATION TYPES */
+
+/* Success (Green) */
+.notification-toast--success {
+  background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+  border-color: #48bb78;
+  color: #2f855a;
+}
+
+.notification-toast--success .notification-toast__dismiss {
+  color: #48bb78;
+}
+
+.notification-toast--success .notification-toast__dismiss:hover {
+  background-color: rgba(72, 187, 120, 0.1);
+}
+
+.notification-toast--success .notification-toast__dismiss:focus {
+  outline-color: #48bb78;
+}
+
+.notification-toast--success .notification-toast__progress {
+  background-color: #48bb78;
+}
+
+/* Error (Red) */
+.notification-toast--error {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+  border-color: #e53e3e;
+  color: #c53030;
+}
+
+.notification-toast--error .notification-toast__dismiss {
+  color: #e53e3e;
+}
+
+.notification-toast--error .notification-toast__dismiss:hover {
+  background-color: rgba(229, 62, 62, 0.1);
+}
+
+.notification-toast--error .notification-toast__dismiss:focus {
+  outline-color: #e53e3e;
+}
+
+.notification-toast--error .notification-toast__progress {
+  background-color: #e53e3e;
+}
+
+/* Warning (Orange/Yellow) */
+.notification-toast--warning {
+  background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%);
+  border-color: #f6ad55;
+  color: #c05621;
+}
+
+.notification-toast--warning .notification-toast__dismiss {
+  color: #f6ad55;
+}
+
+.notification-toast--warning .notification-toast__dismiss:hover {
+  background-color: rgba(246, 173, 85, 0.1);
+}
+
+.notification-toast--warning .notification-toast__dismiss:focus {
+  outline-color: #f6ad55;
+}
+
+.notification-toast--warning .notification-toast__progress {
+  background-color: #f6ad55;
+}
+
+/* Info (Blue) */
+.notification-toast--info {
+  background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+  border-color: #4299e1;
+  color: #2b6cb0;
+}
+
+.notification-toast--info .notification-toast__dismiss {
+  color: #4299e1;
+}
+
+.notification-toast--info .notification-toast__dismiss:hover {
+  background-color: rgba(66, 153, 225, 0.1);
+}
+
+.notification-toast--info .notification-toast__dismiss:focus {
+  outline-color: #4299e1;
+}
+
+.notification-toast--info .notification-toast__progress {
+  background-color: #4299e1;
+}
+
+/* POSITIONS */
+
+/* Top Right */
+.notification-toast--top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Top Left */
+.notification-toast--top-left {
+  top: 1rem;
+  left: 1rem;
+}
+
+/* Top Center */
+.notification-toast--top-center {
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notification-toast--top-center:hover {
+  transform: translateX(-50%) scale(1.02);
+}
+
+/* Bottom Right */
+.notification-toast--bottom-right {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+/* Bottom Left */
+.notification-toast--bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+}
+
+/* Bottom Center */
+.notification-toast--bottom-center {
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notification-toast--bottom-center:hover {
+  transform: translateX(-50%) scale(1.02);
+}
+
+/* ANIMATIONS */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+/* Animations for left-positioned toasts */
+.notification-toast--top-left,
+.notification-toast--bottom-left {
+  animation: toastSlideInLeft 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-toast--top-left.notification-toast--animating,
+.notification-toast--bottom-left.notification-toast--animating {
+  animation: toastSlideOutLeft 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes toastSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.9);
+  }
+}
+
+/* Animations for center-positioned toasts */
+.notification-toast--top-center,
+.notification-toast--bottom-center {
+  animation: toastSlideInCenter 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-toast--top-center.notification-toast--animating,
+.notification-toast--bottom-center.notification-toast--animating {
+  animation: toastSlideOutCenter 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes toastSlideInCenter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOutCenter {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.9);
+  }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .notification-toast {
+    min-width: 260px;
+    max-width: 350px;
+    margin: 0 0.5rem;
+  }
+  
+  .notification-toast__content {
+    padding: 0.875rem 1rem;
+    gap: 0.5rem;
+  }
+  
+  .notification-toast__message {
+    font-size: 0.9rem;
+  }
+  
+  .notification-toast__dismiss {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-toast {
+    min-width: 240px;
+    max-width: 320px;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    transform: none !important;
+  }
+  
+  .notification-toast--top-center,
+  .notification-toast--bottom-center {
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+  }
+  
+  .notification-toast--top-center:hover,
+  .notification-toast--bottom-center:hover {
+    transform: scale(1.02);
+  }
+  
+  .notification-toast__content {
+    padding: 0.75rem;
+  }
+  
+  .notification-toast__message {
+    font-size: 0.85rem;
+  }
+} 

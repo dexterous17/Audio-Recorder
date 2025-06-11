@@ -1,5 +1,6 @@
 import './RecordingCard.css'
 import { useState, useEffect } from 'react'
+import api from '../../../api'
 
 interface Recording {
   id: number
@@ -138,8 +139,8 @@ function RecordingCard({ recording, isActive = false, onPlay }: RecordingCardPro
     })
     
     try {
-      const downloadUrl = `http://localhost:3000/uploads/${recording.source}`
-      console.log('🔗 RecordingCard: Generated download URL:', downloadUrl)
+      const downloadUrl = api.recordings.getDownloadUrl(recording.source)
+      console.log('🔗 RecordingCard: Generated download URL via API management:', downloadUrl)
       
       // Create a temporary anchor element for download
       const link = document.createElement('a')

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { 
   AudioPlayer, 
   AudioRecorder, 
@@ -6,19 +6,33 @@ import {
   RecordingsList, 
   Menu 
 } from './components'
+import { useAppDispatch, useAppSelector } from './store/hooks'
+import { 
+  setCurrentUrl, 
+  setRecordedBlob, 
+  setShowRecorder, 
+  setShowAudioPlayer,
+  switchToRecording,
+  clearRecordedBlob,
+  clearCurrentUrl 
+} from './store/slices/audioSlice'
+import { 
+  setActiveRecordingId, 
+  setSelectedRecording, 
+  triggerRefresh,
+  clearRecordingState
+} from './store/slices/recordingSlice'
+import { setError, clearError } from './store/slices/uiSlice'
 import './App.css'
 
 function App() {
   console.log('🚀 App: Component initializing')
   
-  const [currentUrl, setCurrentUrl] = useState<string | null>(null)
-  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
-  const [showRecorder, setShowRecorder] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
-  const [activeRecordingId, setActiveRecordingId] = useState<number | null>(null)
-  const [selectedRecording, setSelectedRecording] = useState<{id: number, title: string, source: string, created_at: string} | null>(null)
-  const [showAudioPlayer, setShowAudioPlayer] = useState(false)
+  // Redux hooks
+  const dispatch = useAppDispatch()
+  const { currentUrl, recordedBlob, showRecorder, showAudioPlayer } = useAppSelector(state => state.audio)
+  const { activeRecordingId, selectedRecording, refreshTrigger } = useAppSelector(state => state.recording)
+  const { error } = useAppSelector(state => state.ui)
 
   // Log state changes
   useEffect(() => {
@@ -58,8 +72,6 @@ function App() {
         title: selectedRecording.title,
         isPlaying: !!currentUrl
       })
-    } else if (selectedRecording && !activeRecordingId && !currentUrl) {
-      console.log('📋 App: Will render selected recording info:', selectedRecording.title)
     } else if (!selectedRecording) {
       console.log('📋 App: Will render placeholder (no recording selected)')
     }
@@ -74,19 +86,19 @@ function App() {
     
     try {
       console.log('🔄 App: Processing recording completion...')
-      setRecordedBlob(blob)
+      dispatch(setRecordedBlob(blob))
       console.log('✅ App: recordedBlob state updated')
       
-      setShowRecorder(false) // Hide recorder and show playback
+      dispatch(setShowRecorder(false)) // Hide recorder and show playback
       console.log('✅ App: showRecorder set to false (hiding recorder)')
       
-      setError(null)
+      dispatch(clearError())
       console.log('✅ App: error state cleared')
       
       console.log('🎉 App: Recording completion handled successfully')
     } catch (err) {
       console.error('❌ App: Error in handleRecordingComplete:', err)
-      setError('Failed to process recording. Please try again.')
+      dispatch(setError('Failed to process recording. Please try again.'))
       console.error('Recording processing error:', err)
     }
   }
@@ -96,19 +108,19 @@ function App() {
     
     try {
       console.log('🔄 App: Resetting recording state...')
-      setRecordedBlob(null)
+      dispatch(clearRecordedBlob())
       console.log('✅ App: recordedBlob cleared')
       
-      setShowRecorder(true) // Show recorder again
+      dispatch(setShowRecorder(true)) // Show recorder again
       console.log('✅ App: showRecorder set to true (showing recorder)')
       
-      setError(null)
+      dispatch(clearError())
       console.log('✅ App: error state cleared')
       
       console.log('🎉 App: Recording retry handled successfully')
     } catch (err) {
       console.error('❌ App: Error in handleRetryRecording:', err)
-      setError('Failed to reset recorder. Please refresh the page.')
+      dispatch(setError('Failed to reset recorder. Please refresh the page.'))
       console.error('Retry recording error:', err)
     }
   }
@@ -123,27 +135,27 @@ function App() {
     try {
       console.log('🔄 App: Triggering recordings list refresh...')
       const oldTrigger = refreshTrigger
-      setRefreshTrigger(prev => prev + 1)
+      dispatch(triggerRefresh())
       console.log('✅ App: refreshTrigger updated', { from: oldTrigger, to: oldTrigger + 1 })
       
       // IMPORTANT: Clear the recorded blob after saving
       // This will cause the main area to show the placeholder instead of RecordingPlayback
       console.log('🔄 App: Clearing recorded blob after save...')
-      setRecordedBlob(null)
+      dispatch(clearRecordedBlob())
       console.log('✅ App: recordedBlob cleared - will show placeholder')
       
       // Keep showRecorder false so we don't automatically show the recorder
       // User can click "New Recording" if they want to record again
-      setShowRecorder(false)
+      dispatch(setShowRecorder(false))
       console.log('✅ App: showRecorder remains false (showing placeholder)')
       
-      setError(null)
+      dispatch(clearError())
       console.log('✅ App: error state cleared')
       
       console.log('🎉 App: Recording saved and list refreshed:', savedRecording)
     } catch (err) {
       console.error('❌ App: Error in handleRecordingSaved:', err)
-      setError('Recording saved but failed to refresh the list. Please refresh the page.')
+      dispatch(setError('Recording saved but failed to refresh the list. Please refresh the page.'))
       console.error('Recording saved callback error:', err)
     }
   }
@@ -153,18 +165,18 @@ function App() {
     
     try {
       console.log('🔄 App: Setting current audio URL...')
-      setCurrentUrl(url)
+      dispatch(setCurrentUrl(url))
       console.log('✅ App: currentUrl updated to:', url)
       
       // Set the active recording ID and selected recording
-      setActiveRecordingId(recording.id)
+      dispatch(setActiveRecordingId(recording.id))
       console.log('✅ App: activeRecordingId set to:', recording.id)
       
-      setSelectedRecording(recording)
+      dispatch(setSelectedRecording(recording))
       console.log('✅ App: selectedRecording set to:', recording.title)
       
       // Show AudioPlayer and keep it visible
-      setShowAudioPlayer(true)
+      dispatch(setShowAudioPlayer(true))
       console.log('✅ App: showAudioPlayer set to true')
       
       // IMPORTANT: When playing from recordings list, hide recorder/playback interfaces
@@ -172,21 +184,21 @@ function App() {
       console.log('🔄 App: Hiding recording interfaces for playback...')
       
       // Clear any recorded blob (we're playing a saved recording, not a new one)
-      setRecordedBlob(null)
+      dispatch(clearRecordedBlob())
       console.log('✅ App: recordedBlob cleared')
       
       // Hide both recorder and playback interfaces 
       // The main interface should show only the AudioPlayer when playing recordings
-      setShowRecorder(false)
+      dispatch(setShowRecorder(false))
       console.log('✅ App: showRecorder set to false (hiding recording interface)')
       
-      setError(null)
+      dispatch(clearError())
       console.log('✅ App: error state cleared')
       
       console.log('🎉 App: Audio playback initiated successfully - AudioPlayer will show')
     } catch (err) {
       console.error('❌ App: Error in handlePlay:', err)
-      setError('Failed to load audio for playback.')
+      dispatch(setError('Failed to load audio for playback.'))
       console.error('Audio loading error:', err)
     }
   }
@@ -208,72 +220,22 @@ function App() {
     try {
       console.log('🔄 App: Switching to recording mode...')
       
-      // Clear any currently playing audio
-      setCurrentUrl(null)
-      console.log('✅ App: currentUrl cleared')
+      // Use the switchToRecording action that handles all the state changes
+      dispatch(switchToRecording())
+      console.log('✅ App: Switched to recording mode')
       
-      // Clear active recording
-      setActiveRecordingId(null)
-      console.log('✅ App: activeRecordingId cleared')
-      
-      // Clear selected recording
-      setSelectedRecording(null)
-      console.log('✅ App: selectedRecording cleared')
-      
-      // Hide AudioPlayer when switching to recording
-      setShowAudioPlayer(false)
-      console.log('✅ App: showAudioPlayer set to false')
-      
-      // Clear any recorded blob from previous session
-      setRecordedBlob(null)
-      console.log('✅ App: recordedBlob cleared')
-      
-      // Show recorder interface
-      setShowRecorder(true)
-      console.log('✅ App: showRecorder set to true')
+      // Clear recording-related state
+      dispatch(clearRecordingState())
+      console.log('✅ App: Recording state cleared')
       
       // Clear any errors
-      setError(null)
+      dispatch(clearError())
       console.log('✅ App: error state cleared')
       
       console.log('🎉 App: Successfully switched to recording mode')
     } catch (err) {
       console.error('❌ App: Error in handleSwitchToRecording:', err)
-      setError('Failed to switch to recording mode.')
-    }
-  }
-
-  /**
-   * 🛑 STOP AUDIO PLAYBACK HANDLER
-   * 
-   * PURPOSE: Stops current audio playback but keeps AudioPlayer visible
-   * AudioPlayer will remain visible until new recording is selected or "New Recording" is clicked
-   */
-  const handleStopPlayback = () => {
-    console.log('🛑 App: handleStopPlayback called')
-    
-    try {
-      console.log('🔄 App: Stopping audio playback...')
-      
-      // Clear the current audio URL to stop playback
-      setCurrentUrl(null)
-      console.log('✅ App: currentUrl cleared (playback stopped)')
-      
-      // Clear active recording ID to deactivate recording card
-      setActiveRecordingId(null)
-      console.log('✅ App: activeRecordingId cleared')
-      
-      // KEEP selectedRecording and showAudioPlayer so AudioPlayer stays visible
-      console.log('✅ App: selectedRecording and showAudioPlayer preserved - AudioPlayer will stay visible')
-      
-      // Clear any errors
-      setError(null)
-      console.log('✅ App: error state cleared')
-      
-      console.log('🎉 App: Audio playback stopped - AudioPlayer remains visible until new action')
-    } catch (err) {
-      console.error('❌ App: Error in handleStopPlayback:', err)
-      setError('Failed to stop audio playback.')
+      dispatch(setError('Failed to switch to recording mode.'))
     }
   }
 
@@ -284,7 +246,7 @@ function App() {
           <span>{error}</span>
           <button onClick={() => {
             console.log('❌ App: Error message close button clicked')
-            setError(null)
+            dispatch(clearError())
             console.log('✅ App: Error cleared by user')
           }} className="error-close">×</button>
         </div>
@@ -346,20 +308,8 @@ function App() {
                     hour: '2-digit',
                     minute: '2-digit'
                   })}
-                  onStop={handleStopPlayback} 
+                  recordingId={selectedRecording.id}
                 />
-              )
-            } else if (selectedRecording && !activeRecordingId && !currentUrl) {
-              console.log('🎨 App: Rendering selected-recording-info (fallback)')
-              return (
-                <div className="selected-recording-info">
-                  <h2>🎵 {selectedRecording.title}</h2>
-                  <p>Recording #{selectedRecording.id}</p>
-                  <p>File: {selectedRecording.source}</p>
-                  <p className="recording-info-instruction">
-                    Playback stopped. Use the controls below to play again, or select another recording.
-                  </p>
-                </div>
               )
             } else if (!selectedRecording) {
               console.log('🎨 App: Rendering placeholder')

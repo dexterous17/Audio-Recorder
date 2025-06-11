@@ -8,23 +8,6 @@ function Menu() {
     setActiveItem(itemName)
     
     switch (itemName) {
-      case 'home':
-        window.location.reload()
-        break
-      case 'recordings': {
-        const recordingsList = document.querySelector('.recordings-list-container')
-        if (recordingsList) {
-          recordingsList.scrollIntoView({ behavior: 'smooth' })
-        }
-        break
-      }
-      case 'recorder': {
-        const recorder = document.querySelector('.audio-recorder-container')
-        if (recorder) {
-          recorder.scrollIntoView({ behavior: 'smooth' })
-        }
-        break
-      }
       case 'about':
         alert('Audio Recording App v1.0\nRecord, save, and manage your audio recordings.')
         break
@@ -44,33 +27,6 @@ function Menu() {
       </div>
       
       <ul className="menu-items">
-        <li>
-          <button 
-            onClick={() => handleMenuItemClick('home')}
-            className={`menu-button ${activeItem === 'home' ? 'active' : ''}`}
-          >
-            🏠 Home
-          </button>
-        </li>
-        
-        <li>
-          <button 
-            onClick={() => handleMenuItemClick('recorder')}
-            className={`menu-button ${activeItem === 'recorder' ? 'active' : ''}`}
-          >
-            🎤 Recorder
-          </button>
-        </li>
-        
-        <li>
-          <button 
-            onClick={() => handleMenuItemClick('recordings')}
-            className={`menu-button ${activeItem === 'recordings' ? 'active' : ''}`}
-          >
-            🎵 Recordings
-          </button>
-        </li>
-        
         <li>
           <button 
             onClick={() => handleMenuItemClick('about')}

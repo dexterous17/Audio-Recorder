@@ -1,0 +1,295 @@
+/* Error Message Component Styles */
+.error-message {
+  position: relative;
+  border-radius: 8px;
+  padding: 0;
+  margin: 1rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 2px solid;
+  overflow: hidden;
+  animation: errorSlideIn 0.3s ease-out;
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+/* Content Container */
+.error-message__content {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+/* Title Section */
+.error-message__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+/* Message Text */
+.error-message__text {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Error Icon */
+.error-message__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+/* Dismiss Button */
+.error-message__dismiss {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+.error-message__dismiss:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.error-message__dismiss:focus {
+  outline: 2px solid;
+  outline-offset: 2px;
+}
+
+/* Progress Bar for Auto-dismiss */
+.error-message__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform-origin: left;
+  animation: errorProgressBar linear;
+}
+
+@keyframes errorProgressBar {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* SEVERITY LEVELS */
+
+/* Error Severity (Red) */
+.error-message--error {
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+  border-color: #e53e3e;
+  color: #742a2a;
+}
+
+.error-message--error .error-message__title {
+  color: #c53030;
+}
+
+.error-message--error .error-message__dismiss {
+  color: #e53e3e;
+}
+
+.error-message--error .error-message__dismiss:hover {
+  background-color: rgba(229, 62, 62, 0.1);
+}
+
+.error-message--error .error-message__progress {
+  background-color: #e53e3e;
+}
+
+/* Warning Severity (Orange/Yellow) */
+.error-message--warning {
+  background: linear-gradient(135deg, #fffaf0 0%, #ffffff 100%);
+  border-color: #f6ad55;
+  color: #744210;
+}
+
+.error-message--warning .error-message__title {
+  color: #c05621;
+}
+
+.error-message--warning .error-message__dismiss {
+  color: #f6ad55;
+}
+
+.error-message--warning .error-message__dismiss:hover {
+  background-color: rgba(246, 173, 85, 0.1);
+}
+
+.error-message--warning .error-message__progress {
+  background-color: #f6ad55;
+}
+
+/* Info Severity (Blue) */
+.error-message--info {
+  background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+  border-color: #4299e1;
+  color: #2a69ac;
+}
+
+.error-message--info .error-message__title {
+  color: #3182ce;
+}
+
+.error-message--info .error-message__dismiss {
+  color: #4299e1;
+}
+
+.error-message--info .error-message__dismiss:hover {
+  background-color: rgba(66, 153, 225, 0.1);
+}
+
+.error-message--info .error-message__progress {
+  background-color: #4299e1;
+}
+
+/* POSITION VARIANTS */
+
+/* Inline (default) */
+.error-message--inline {
+  position: relative;
+  width: 100%;
+}
+
+/* Fixed Top */
+.error-message--fixed-top {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 90vw;
+  width: auto;
+  min-width: 300px;
+  margin: 0;
+  animation: errorSlideDown 0.3s ease-out;
+}
+
+/* Fixed Bottom */
+.error-message--fixed-bottom {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 90vw;
+  width: auto;
+  min-width: 300px;
+  margin: 0;
+  animation: errorSlideUp 0.3s ease-out;
+}
+
+/* ANIMATIONS */
+@keyframes errorSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes errorSlideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes errorSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .error-message {
+    margin: 0.5rem 0;
+  }
+  
+  .error-message__content {
+    padding: 0.75rem 1rem;
+  }
+  
+  .error-message__title {
+    font-size: 0.9rem;
+  }
+  
+  .error-message__text {
+    font-size: 0.85rem;
+  }
+  
+  .error-message__dismiss {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  
+  .error-message--fixed-top,
+  .error-message--fixed-bottom {
+    max-width: 95vw;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-message__content {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .error-message__title {
+    font-size: 0.85rem;
+  }
+  
+  .error-message__text {
+    font-size: 0.8rem;
+  }
+  
+  .error-message--fixed-top,
+  .error-message--fixed-bottom {
+    max-width: 98vw;
+    min-width: 260px;
+  }
+} 
